@@ -1,38 +1,53 @@
 {# begin {templatelocation} #}
+<div id="contactform" class="contact-form">
+    <h1>{contact_form}</h1>
+    <p class="contact-form__intro">{form_message}</p>
+    {errors}
+    <form id="form" method="post" action="{form_action}" class="contact-form__form">
+        <div class="contact-form__field">
+            <label for="contact-author">{lang_username}</label>
+            <span class="contact-form__help">{add_your_name}</span>
+            <input type="text" name="author" id="contact-author" value="{username}" maxlength="80" required{xhtml}>
+        </div>
 
-<div id="contactform" class="contactform">
-<form  class="uk-form" id="form" name="form" method="post" action="{site_url}/contact/index.php">
-<h1>{contact_form}</h1>
-<p>{form_message}</p>
-<div>
-<label>{lang_username}
-<span class="small">{add_your_name}</span>
-</label>
-<input type="text" name="author" id="name" value="{username}" maxlength="32"{xhtml}>
-</div>
-<div style="clear:both;"></div>
-<div>
-<label>{lang_useremail}
-<span class="small">{add_valid_address}</span>
-</label>
-<input type="text" name="authoremail" id="email" value="{useremail}" maxlength="96"{xhtml}>
-</div>
-<div style="clear:both;"></div>
-<div>
-<label>{lang_message}
-</label>
-<textarea name="message" wrap="physical">{message}</textarea>
-<div style="clear:both;"><input type="checkbox" class="cc_checkbox" name="cc"{cc}{xhtml}>{lang_cc_description}</div>
-</div>
-<div style="clear:both;"></div>
+        <div class="contact-form__field">
+            <label for="contact-email">{lang_useremail}</label>
+            <span class="contact-form__help">{add_valid_address}</span>
+            <input type="email" name="authoremail" id="contact-email" value="{useremail}" maxlength="160" autocomplete="email" required{xhtml}>
+        </div>
 
-<div class="contact_captcha" id="contact_captcha">
-{captcha}
-</div>
-<input type="hidden" name="what" value="contact"{xhtml}>
-<div style="margin-bottom:25px;"><input type="submit" value="{lang_submit}"{xhtml}></div>
+        {subject_open}<div class="contact-form__field">
+            <label for="contact-subject">{lang_subject}</label>
+            <input type="text" name="subject" id="contact-subject" value="{subject}" maxlength="160" required{xhtml}>
+        </div>{subject_close}
 
-</form>
-</div>
+        <div class="contact-form__field">
+            <label for="contact-message">{lang_message}</label>
+            <textarea name="message" id="contact-message" rows="8" required>{message}</textarea>
+        </div>
 
+        {cc_open}<div class="contact-form__check">
+            <label><input type="checkbox" name="cc"{cc_checked}{xhtml}> {lang_cc_description}</label>
+        </div>{cc_close}
+
+        {privacy_open}<div class="contact-form__check">
+            <label><input type="checkbox" name="privacy" value="1"{privacy_checked}{xhtml}> {privacy_notice}</label>
+        </div>{privacy_close}
+
+        {human_open}<div class="contact-form__check">
+            <label><input type="checkbox" name="human_confirmation" value="1"{human_checked}{xhtml}> {human_confirmation}</label>
+        </div>{human_close}
+
+        {honeypot_open}<div class="contact-form__hp" aria-hidden="true">
+            <label for="contact-website">{honeypot_label}</label>
+            <input type="text" name="website" id="contact-website" value="" tabindex="-1" autocomplete="off"{xhtml}>
+        </div>{honeypot_close}
+
+        <div class="contact-form__captcha">{captcha}{recaptcha_v3}</div>
+        {csrf_field}
+        <input type="hidden" name="form_time" value="{form_time}"{xhtml}>
+        <input type="hidden" name="what" value="contact"{xhtml}>
+        <div class="contact-form__actions"><button type="submit" class="contact-form__submit{recaptcha_button_class}"{invisible_recaptcha}>{lang_submit}</button></div>
+    </form>
+</div>
 {# end {templatelocation} #}
