@@ -1,5 +1,5 @@
 <?php
-/** Contact 2.0.7 - Geeklog Plugin API */
+/** Contact 2.1.0 - Geeklog Plugin API */
 
 if (isset($_SERVER['PHP_SELF']) && strpos(strtolower($_SERVER['PHP_SELF']), 'functions.inc') !== false) {
     die('This file can not be used on its own.');
@@ -46,6 +46,120 @@ function plugin_geticon_contact()
 {
     global $_CONF;
     return $_CONF['site_admin_url'] . '/plugins/contact/images/contact.png';
+}
+
+
+/**
+ * Shared capability declaration for Agent, Hub, Eclipse and other consumers.
+ *
+ * Contact is a service provider. It exposes a public form description and an
+ * administrator-only dashboard summary. Submission remains a human-facing
+ * operation and is deliberately not advertised as a machine action.
+ */
+function plugin_getcapabilities_contact()
+{
+    return array(
+        'schema' => 1,
+        'roles' => array('service'),
+        'capabilities' => array(
+            'contact.form.describe',
+            'dashboard.summary'
+        )
+    );
+}
+
+/**
+ * Describe the public Contact form without exposing recipient or message data.
+ */
+function service_contact_form_describe_contact($args, &$output, &$svc_msg)
+{
+    global $_CONF;
+
+    $output = array();
+    $svc_msg = '';
+
+    $protectionMode = (int) CONTACT_conf('protection_mode', 0);
+    if ($protectionMode < 0 || $protectionMode > 3) {
+        $protectionMode = 0;
+    }
+
+    $output = array(
+        'schema' => 1,
+        'id' => 'contact',
+        'title' => CONTACT_conf('menu', 'Contact'),
+        'url' => $_CONF['site_url'] . '/contact/',
+        'enabled' => ((int) CONTACT_conf('use_contact_form', 1) === 1),
+        'login_required' => ((int) CONTACT_conf('contactloginrequired', 0) === 1),
+        'subject_enabled' => ((int) CONTACT_conf('show_subject', 1) === 1),
+        'sender_copy_available' => ((int) CONTACT_conf('allow_cc', 1) === 1),
+        'privacy_acknowledgement' => ((int) CONTACT_conf('privacy_enabled', 0) === 1),
+        'max_message_length' => max(500, (int) CONTACT_conf('max_message_length', 10000)),
+        'protection' => array(
+            'local_antispam' => true,
+            'mode' => $protectionMode,
+            'recaptcha_optional' => ($protectionMode === 0 || $protectionMode === 3)
+        )
+    );
+
+    return true;
+}
+
+/**
+ * Provider-owned administration summary consumed generically by Eclipse.
+ */
+function service_dashboard_summary_contact($args, &$output, &$svc_msg)
+{
+    global $_CONF;
+
+    $output = array();
+    $svc_msg = '';
+
+    if (!SEC_hasRights('contact.admin')) {
+        $svc_msg = 'Access denied.';
+        return false;
+    }
+
+    $enabled = ((int) CONTACT_conf('use_contact_form', 1) === 1);
+    $privacy = ((int) CONTACT_conf('privacy_enabled', 0) === 1);
+    $loginRequired = ((int) CONTACT_conf('contactloginrequired', 0) === 1);
+    $alerts = array();
+
+    if (!$enabled) {
+        $alerts[] = array(
+            'id' => 'form-disabled',
+            'status' => 'info',
+            'message' => 'The public contact form is disabled.'
+        );
+    }
+
+    $output = array(
+        'schema' => 1,
+        'status' => 'ok',
+        'metrics' => array(
+            array('id' => 'form', 'label' => 'Public form', 'value' => $enabled ? 'Enabled' : 'Disabled'),
+            array('id' => 'access', 'label' => 'Anonymous access', 'value' => $loginRequired ? 'Disabled' : 'Enabled'),
+            array('id' => 'privacy', 'label' => 'Privacy acknowledgement', 'value' => $privacy ? 'Enabled' : 'Disabled')
+        ),
+        'alerts' => $alerts,
+        'links' => array(
+            array(
+                'label' => 'Configure Contact',
+                'url' => $_CONF['site_admin_url'] . '/configuration.php?conf_group=contact'
+            ),
+            array(
+                'label' => 'Open contact form',
+                'url' => $_CONF['site_url'] . '/contact/'
+            )
+        ),
+        'updated' => time()
+    );
+
+    return true;
+}
+
+function plugin_getversion_contact()
+{
+    return '2.1.0';
 }
 
 function plugin_chkVersion_contact()
@@ -149,7 +263,7 @@ function plugin_enablestatechange_contact($enable)
 function plugin_getheadercode_contact()
 {
     global $_CONF;
-    return LB . '<link rel="stylesheet" type="text/css" href="' . $_CONF['site_url'] . '/contact/style.css?v=2.0.7"' . XHTML . '>' . LB;
+    return LB . '<link rel="stylesheet" type="text/css" href="' . $_CONF['site_url'] . '/contact/style.css?v=2.1.0"' . XHTML . '>' . LB;
 }
 
 function CONTACT_message($message, $title)
