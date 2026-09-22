@@ -32,7 +32,16 @@ $LANG_CONTACT_1 = array(
     'captcha_error' => 'The CAPTCHA/reCAPTCHA validation failed. Please try again.',
     'human_confirmation' => 'I confirm that I want to send this message.',
     'human_confirmation_required' => 'Please confirm that you want to send this message.',
-    'mail_sender' => "Sender: %s <%s>"
+    'mail_sender' => "Sender: %s <%s>",
+    'dashboard_form' => 'Public form',
+    'dashboard_access' => 'Anonymous access',
+    'dashboard_privacy' => 'Privacy acknowledgement',
+    'enabled' => 'Enabled',
+    'disabled' => 'Disabled',
+    'configure_contact' => 'Configure Contact',
+    'open_contact_form' => 'Open contact form',
+    'form_disabled_alert' => 'The public contact form is disabled.',
+    'access_denied' => 'Access denied.'
 );
 
 $LANG_configsections['contact'] = array('label' => 'Contact', 'title' => 'Contact configuration');
@@ -64,4 +73,13 @@ $LANG_configselects['contact'] = array(
     1 => array('True' => true, 'False' => false),
     2 => array('Automatic' => 0, 'Honeypot + delay' => 1, 'Honeypot + delay + human confirmation' => 2, 'reCAPTCHA when available' => 3)
 );
+
+$LANG_configtooltips['contact'] = array(
+    'form_recipient' => 'Geeklog user UID that receives contact messages. Verify that this account has a valid email address.',
+    'protection_mode' => 'Local protections remain active in every mode. reCAPTCHA is used only when it is available and correctly configured.',
+    'min_submit_seconds' => 'Rejects submissions sent too quickly after the form was displayed to reduce automated spam.',
+    'max_message_length' => 'Limits the accepted message size before email delivery. The effective minimum is 500 characters.',
+    'privacy_url' => 'Use a complete HTTP(S) URL. When valid, the privacy acknowledgement text links to this page.'
+);
+
 $PLG_contact_MESSAGE3002 = isset($LANG32[9]) ? $LANG32[9] : 'This plugin requires a newer version of Geeklog.';
