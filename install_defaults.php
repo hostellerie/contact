@@ -1,5 +1,5 @@
 <?php
-/** Contact 2.0.7 - default configuration */
+/** Contact 2.1.0 - default configuration */
 
 if (isset($_SERVER['PHP_SELF']) && strpos(strtolower($_SERVER['PHP_SELF']), 'install_defaults.php') !== false) {
     die('This file can not be used on its own!');
