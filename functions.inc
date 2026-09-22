@@ -1,6 +1,8 @@
 <?php
 /** Contact 2.1.0 - Geeklog Plugin API */
 
+global $_CONF, $_TABLES, $_PLUGINS, $_CONTACT_CONF;
+
 if (isset($_SERVER['PHP_SELF']) && strpos(strtolower($_SERVER['PHP_SELF']), 'functions.inc') !== false) {
     die('This file can not be used on its own.');
 }
@@ -277,4 +279,20 @@ function CONTACT_message($message, $title)
     $retval .= $safe;
     $retval .= COM_endBlock(COM_getBlockTemplate('_msg_block', 'footer'));
     return $retval;
+}
+
+
+/**
+ * Native Geeklog configuration tooltips for consequential Contact settings.
+ */
+function plugin_getconfigtooltip_contact($id)
+{
+    global $LANG_configtooltips;
+
+    if (isset($LANG_configtooltips['contact'])
+        && isset($LANG_configtooltips['contact'][$id])) {
+        return $LANG_configtooltips['contact'][$id];
+    }
+
+    return '';
 }
