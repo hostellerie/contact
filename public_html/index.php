@@ -1,5 +1,5 @@
 <?php
-/** Contact 2.0.7 - public contact page */
+/** Contact 2.1.0 - public contact page */
 require_once '../lib-common.php';
 
 if (!in_array('contact', $_PLUGINS)) {
