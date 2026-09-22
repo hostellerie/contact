@@ -1,5 +1,17 @@
 # Changelog
 
+## Contact 2.1.0
+
+- Added the shared capability declaration with the service role.
+- Added the bounded read-only `contact.form.describe` service for Agent, Hub and other consumers.
+- Added administrator-only `dashboard.summary` data for Eclipse and future dashboards.
+- Deliberately kept machine submission out of the declared capabilities until a shared authorized-action contract is available.
+- Added native Geeklog configuration tooltips for consequential settings.
+- Hardened `functions.inc` global bootstrap behavior for Geeklog 2.2.x include scope.
+- Normalized runtime, installer, documentation and stylesheet cache-busting version to 2.1.0.
+- Added release notes, roadmap and an installable-archive workflow.
+- Kept Geeklog 2.1.1–2.2.2 and PHP 5.6–8.x transition compatibility.
+
 ## Contact 2.0.7
 
 - Added Geeklog CSRF token validation for contact submissions when the supported token API is available.
