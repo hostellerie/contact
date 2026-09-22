@@ -1,5 +1,5 @@
 <?php
-/** Contact 2.0.7 - Geeklog plugin installer */
+/** Contact 2.1.0 - Geeklog plugin installer */
 
 function plugin_autoinstall_contact($pi_name)
 {
@@ -11,7 +11,7 @@ function plugin_autoinstall_contact($pi_name)
         'info' => array(
             'pi_name' => $pi_name,
             'pi_display_name' => $pi_display_name,
-            'pi_version' => '2.0.7',
+            'pi_version' => '2.1.0',
             'pi_gl_version' => '2.1.1',
             'pi_homepage' => 'https://github.com/hostellerie/contact'
         ),
