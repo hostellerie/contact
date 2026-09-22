@@ -32,7 +32,16 @@ $LANG_CONTACT_1 = array(
     'captcha_error' => 'La validation CAPTCHA/reCAPTCHA a échoué. Veuillez réessayer.',
     'human_confirmation' => 'Je confirme que je souhaite envoyer ce message.',
     'human_confirmation_required' => 'Veuillez confirmer que vous souhaitez envoyer ce message.',
-    'mail_sender' => "Expéditeur : %s <%s>"
+    'mail_sender' => "Expéditeur : %s <%s>",
+    'dashboard_form' => 'Formulaire public',
+    'dashboard_access' => 'Accès anonyme',
+    'dashboard_privacy' => 'Acceptation de la confidentialité',
+    'enabled' => 'Activé',
+    'disabled' => 'Désactivé',
+    'configure_contact' => 'Configurer Contact',
+    'open_contact_form' => 'Ouvrir le formulaire de contact',
+    'form_disabled_alert' => 'Le formulaire public de contact est désactivé.',
+    'access_denied' => 'Accès refusé.'
 );
 
 $LANG_configsections['contact'] = array('label' => 'Contact', 'title' => 'Configuration du plugin Contact');
@@ -64,4 +73,13 @@ $LANG_configselects['contact'] = array(
     1 => array('Oui' => true, 'Non' => false),
     2 => array('Automatique' => 0, 'Honeypot + délai' => 1, 'Honeypot + délai + confirmation humaine' => 2, 'reCAPTCHA si disponible' => 3)
 );
+
+$LANG_configtooltips['contact'] = array(
+    'form_recipient' => 'UID de l’utilisateur Geeklog qui reçoit les messages. Vérifiez que ce compte possède une adresse email valide.',
+    'protection_mode' => 'Les protections locales restent actives dans tous les modes. reCAPTCHA n’est utilisé que lorsqu’il est disponible et correctement configuré.',
+    'min_submit_seconds' => 'Rejette les envois effectués trop rapidement après l’affichage du formulaire afin de réduire les soumissions automatisées.',
+    'max_message_length' => 'Limite la taille du message accepté avant l’envoi par email. La valeur minimale effective est de 500 caractères.',
+    'privacy_url' => 'Utilisez une URL HTTP(S) complète. Lorsqu’elle est valide, le texte de confidentialité devient un lien vers cette page.'
+);
+
 $PLG_contact_MESSAGE3002 = isset($LANG32[9]) ? $LANG32[9] : 'Ce plugin nécessite une version plus récente de Geeklog.';
