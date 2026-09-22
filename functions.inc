@@ -85,6 +85,35 @@ function service_contact_form_describe_contact($args, &$output, &$svc_msg)
         $protectionMode = 0;
     }
 
+    $maxMessageLength = max(500, (int) CONTACT_conf('max_message_length', 10000));
+    $fields = array(
+        array('name' => 'author', 'type' => 'text', 'required' => true),
+        array('name' => 'authoremail', 'type' => 'email', 'required' => true)
+    );
+    if ((int) CONTACT_conf('show_subject', 1) === 1) {
+        $fields[] = array('name' => 'subject', 'type' => 'text', 'required' => true);
+    }
+    $fields[] = array(
+        'name' => 'message',
+        'type' => 'textarea',
+        'required' => true,
+        'max_length' => $maxMessageLength
+    );
+    if ((int) CONTACT_conf('allow_cc', 1) === 1) {
+        $fields[] = array('name' => 'cc', 'type' => 'checkbox', 'required' => false);
+    }
+    if ((int) CONTACT_conf('privacy_enabled', 0) === 1) {
+        $fields[] = array('name' => 'privacy', 'type' => 'consent', 'required' => true);
+    }
+    if ($protectionMode === 2) {
+        $fields[] = array('name' => 'human_confirmation', 'type' => 'consent', 'required' => true);
+    }
+
+    $privacyUrl = trim((string) CONTACT_conf('privacy_url', ''));
+    if ($privacyUrl === '' || !preg_match('#^https?://#i', $privacyUrl)) {
+        $privacyUrl = '';
+    }
+
     $output = array(
         'schema' => 1,
         'id' => 'contact',
@@ -92,10 +121,8 @@ function service_contact_form_describe_contact($args, &$output, &$svc_msg)
         'url' => $_CONF['site_url'] . '/contact/',
         'enabled' => ((int) CONTACT_conf('use_contact_form', 1) === 1),
         'login_required' => ((int) CONTACT_conf('contactloginrequired', 0) === 1),
-        'subject_enabled' => ((int) CONTACT_conf('show_subject', 1) === 1),
-        'sender_copy_available' => ((int) CONTACT_conf('allow_cc', 1) === 1),
-        'privacy_acknowledgement' => ((int) CONTACT_conf('privacy_enabled', 0) === 1),
-        'max_message_length' => max(500, (int) CONTACT_conf('max_message_length', 10000)),
+        'fields' => $fields,
+        'privacy_policy_url' => $privacyUrl,
         'protection' => array(
             'local_antispam' => true,
             'mode' => $protectionMode,
@@ -111,13 +138,13 @@ function service_contact_form_describe_contact($args, &$output, &$svc_msg)
  */
 function service_dashboard_summary_contact($args, &$output, &$svc_msg)
 {
-    global $_CONF;
+    global $_CONF, $_TABLES, $LANG_CONTACT_1;
 
     $output = array();
     $svc_msg = '';
 
     if (!SEC_hasRights('contact.admin')) {
-        $svc_msg = 'Access denied.';
+        $svc_msg = $LANG_CONTACT_1['access_denied'];
         return false;
     }
 
@@ -130,26 +157,46 @@ function service_dashboard_summary_contact($args, &$output, &$svc_msg)
         $alerts[] = array(
             'id' => 'form-disabled',
             'status' => 'info',
-            'message' => 'The public contact form is disabled.'
+            'message' => $LANG_CONTACT_1['form_disabled_alert']
         );
     }
 
+    $recipientUid = max(0, (int) CONTACT_conf('form_recipient', 2));
+    $recipientValid = false;
+    if ($recipientUid > 0) {
+        $recipientEmail = DB_getItem($_TABLES['users'], 'email', 'uid = ' . $recipientUid);
+        $recipientValid = is_string($recipientEmail)
+            && $recipientEmail !== ''
+            && COM_isemail($recipientEmail);
+    }
+    if (!$recipientValid) {
+        $alerts[] = array(
+            'id' => 'recipient-invalid',
+            'status' => 'warning',
+            'message' => $LANG_CONTACT_1['recipient_error']
+        );
+    }
+
+    $enabledLabel = $LANG_CONTACT_1['enabled'];
+    $disabledLabel = $LANG_CONTACT_1['disabled'];
+
     $output = array(
         'schema' => 1,
-        'status' => 'ok',
+        'status' => $recipientValid ? 'ok' : 'warning',
         'metrics' => array(
-            array('id' => 'form', 'label' => 'Public form', 'value' => $enabled ? 'Enabled' : 'Disabled'),
-            array('id' => 'access', 'label' => 'Anonymous access', 'value' => $loginRequired ? 'Disabled' : 'Enabled'),
-            array('id' => 'privacy', 'label' => 'Privacy acknowledgement', 'value' => $privacy ? 'Enabled' : 'Disabled')
+            array('id' => 'form', 'label' => $LANG_CONTACT_1['dashboard_form'], 'value' => $enabled ? $enabledLabel : $disabledLabel),
+            array('id' => 'access', 'label' => $LANG_CONTACT_1['dashboard_access'], 'value' => $loginRequired ? $disabledLabel : $enabledLabel),
+            array('id' => 'privacy', 'label' => $LANG_CONTACT_1['dashboard_privacy'], 'value' => $privacy ? $enabledLabel : $disabledLabel),
+            array('id' => 'recipient', 'label' => $LANG_CONTACT_1['dashboard_recipient'], 'value' => $recipientValid ? $LANG_CONTACT_1['valid'] : $LANG_CONTACT_1['invalid'])
         ),
         'alerts' => $alerts,
         'links' => array(
             array(
-                'label' => 'Configure Contact',
+                'label' => $LANG_CONTACT_1['configure_contact'],
                 'url' => $_CONF['site_admin_url'] . '/configuration.php?conf_group=contact'
             ),
             array(
-                'label' => 'Open contact form',
+                'label' => $LANG_CONTACT_1['open_contact_form'],
                 'url' => $_CONF['site_url'] . '/contact/'
             )
         ),
